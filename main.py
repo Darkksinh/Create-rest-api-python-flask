@@ -113,7 +113,7 @@ def waifu():
 @app.route('/')
 def home():
     """Landing page."""
-    return render_template('FILE-HTML-LO.html')
+    return render_template('api.html')
 
 
       
