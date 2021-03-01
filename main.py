@@ -109,6 +109,59 @@ def waifu():
 			'image': result['image'],
 			'source': result['url']
 		}
+	
+@app.route('/api/wiki', methods=['GET','POST'])
+def wikipedia():
+	if request.args.get('q'):
+		try:
+			kya = request.args.get('q')
+			cih = f'https://id.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles={kya}'
+			heuh = get(cih).json()
+			heuh_ = heuh['query']['pages']
+			hueh = re.findall(r'(\d+)', str(heuh_))
+			result = heuh_[hueh[0]]['extract']
+			return {
+				'status': 200,
+				'restapi' :  'ferdiz-afk',
+				'result': result
+			}
+		except Exception as e:
+			print(e)
+			return {
+				'status': False,
+				'error': '[❗] Yang anda cari tidak bisa saya temukan di wikipedia!'
+			}
+	else:
+		return {
+			'status': False,
+			'msg': '[!] Masukkan param q'
+		}
+
+
+@app.route('/api/chord', methods=['GET','POST'])
+def chord():
+	if request.args.get('q'):
+		try:
+			q = request.args.get('q').replace(' ','+')
+			id = get('http://app.chordindonesia.com/?json=get_search_results&exclude=date,modified,attachments,comment_count,comment_status,thumbnail,thumbnail_images,author,excerpt,content,categories,tags,comments,custom_fields&search=%s' % q).json()['posts'][0]['id']
+			chord = get('http://app.chordindonesia.com/?json=get_post&id=%s' % id).json()
+			result = html_text.parse_html(chord['post']['content']).text_content()
+			return {
+				'status': 200,
+				'restapi' : 'ferdiz-afk',
+				'result': result
+			}
+		except Exception as e:
+			print(e)
+			return {
+				'status': False,
+				'error': '[❗] Maaf chord yang anda cari tidak dapat saya temukan!'
+			}
+	else:
+		return {
+			'status': False,
+			'msg': '[!] Masukkan parameter q'
+		}
 
 @app.route('/')
 def home():
